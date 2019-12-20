@@ -31,11 +31,11 @@ class StepFactory:
         if "__all__" in custom_steps_module.__dict__:
             custom_steps = custom_steps_module.__dict__["__all__"]
         else:
-            custom_steps = [
+            custom_steps = (
                 custom_step
                 for custom_step in custom_steps_module.__dict__
                 if not custom_step.startswith("_")
-            ]
+            )
         globals().update({
             key: getattr(custom_steps_module, key)
             for key in custom_steps

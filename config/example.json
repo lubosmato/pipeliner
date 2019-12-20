@@ -6,10 +6,20 @@
       "schedule": "* * * * *",
       "steps": [
         {
-          "class": "FindHtmlElement",
+          "class": "HttpDownload",
+          "params": {
+            "url": "http://www.example.com/",
+            "headers": {}
+          }
+        },
+        {
+          "class": "GetHtmlElementText",
           "params": {
             "element_xpath": "(//*[@class=\"post-title\"])[1]/a"
           }
+        },
+        {
+          "class": "CompareWithPrevious"
         },
         {
           "class": "SayHello"

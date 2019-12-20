@@ -1,0 +1,17 @@
+{
+  "custom_steps": "../custom_steps/",
+  "pipelines": [
+    {
+      "name": "Notify me when new blog post is published",
+      "schedule": "* * * * *",
+      "steps": [
+        {
+          "class": "FindHtmlElement",
+          "params": {
+            "element_xpath": "(//*[@class=\"post-title\"])[1]/a"
+          }
+        }
+      ]
+    }
+  ]
+}

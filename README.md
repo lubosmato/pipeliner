@@ -22,7 +22,7 @@ By providing this configuration, pipeliner will download file from `http://www.e
           }
         },
         {
-          "class": "FindHtmlElement",
+          "class": "GetHtmlElementText",
           "params": {
             "element_xpath": "(//*[@class=\"post-title\"])[1]/a"
           }

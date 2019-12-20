@@ -5,7 +5,7 @@ import os
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from pathlib import Path
 
-from pipeliner import StepFactory, PipelineFactory, Pipeline
+from pipeliner import StepFactory, PipelineFactory
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +64,13 @@ Get rid of repetitive tasks. Make yourself more happy.
         for pipeline_config in config.get("pipelines", [])
     ]
 
-    # for pipeline in pipelines:
-    #     pipeline.run()
-    # 
-    # print(pipelines)
+    for pipeline in pipelines:
+        pipeline.run()
+
+    for pipeline in pipelines:
+        pipeline.run()
+
+    print(pipelines)
 
 
 def load_logger_config():

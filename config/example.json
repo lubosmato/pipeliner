@@ -10,6 +10,12 @@
           "params": {
             "element_xpath": "(//*[@class=\"post-title\"])[1]/a"
           }
+        },
+        {
+          "class": "SayHello"
+        },
+        {
+          "class": "SayHello"
         }
       ]
     }

@@ -15,5 +15,5 @@ class Pipeline:
         return self._name
 
     @property
-    def schedule(self):
+    def schedule(self) -> str:
         return self._schedule

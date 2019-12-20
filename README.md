@@ -42,6 +42,11 @@ By providing this configuration, pipeliner will download file from `http://www.e
 }
 ```
 
+# How to run
+1. Create a configuration file
+2. Run pipeliner `python -m pipeliner /etc/pipeliner/my_config.json`
+
+
 # Custom steps 
 Pipeliner can use custom steps. Just add path to a package with custom steps and use their class names in the configuration file.
 ```json

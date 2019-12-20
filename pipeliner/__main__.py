@@ -5,6 +5,8 @@ import os
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from pathlib import Path
 
+from pipeliner import StepFactory, PipelineFactory, Pipeline
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,7 +53,21 @@ Get rid of repetitive tasks. Make yourself more happy.
         help="path to a config JSON file"
     )
     args = parser.parse_args()
-    print(args.config)
+    config = args.config
+
+    custom_steps_path = Path(config.get("custom_steps", "")).resolve()
+    step_factory = StepFactory(custom_steps_path)
+    pipeline_factory = PipelineFactory(step_factory)
+
+    pipelines = [
+        pipeline_factory.create(pipeline_config)
+        for pipeline_config in config.get("pipelines", [])
+    ]
+
+    # for pipeline in pipelines:
+    #     pipeline.run()
+    # 
+    # print(pipelines)
 
 
 def load_logger_config():

@@ -10,26 +10,6 @@ from pipeliner import StepFactory, PipelineFactory
 logger = logging.getLogger(__name__)
 
 
-def load_config(path: str) -> dict:
-    try:
-        path = Path(path).resolve()
-        if path.suffix.lower() != ".json":
-            raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
-
-        if not path.is_file():
-            cwd = Path(os.getcwd()).resolve()
-            path = cwd / path
-
-        if path.is_file():
-            with open(str(path), "r") as config_file:
-                return json.load(config_file)
-
-        raise FileNotFoundError(f"{path} is not a valid file")
-
-    except Exception as e:
-        raise ArgumentTypeError(f"Could not parse config {path} because {e}")
-
-
 def main():
     load_logger_config()
 
@@ -78,6 +58,26 @@ def load_logger_config():
     with open(log_config_path, "r") as log_config_file:
         log_config = json.load(log_config_file)
         logging.config.dictConfig(log_config)
+
+
+def load_config(path: str) -> dict:
+    try:
+        path = Path(path).resolve()
+        if path.suffix.lower() != ".json":
+            raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
+
+        if not path.is_file():
+            cwd = Path(os.getcwd()).resolve()
+            path = cwd / path
+
+        if path.is_file():
+            with open(str(path), "r") as config_file:
+                return json.load(config_file)
+
+        raise FileNotFoundError(f"{path} is not a valid file")
+
+    except Exception as e:
+        raise ArgumentTypeError(f"Could not parse config {path} because {e}")
 
 
 if __name__ == '__main__':

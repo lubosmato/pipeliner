@@ -16,7 +16,7 @@ By providing this configuration, pipeliner will download file from `http://www.e
       "schedule": "* * * * *",
       "steps": [
         {
-          "class": "DownloadFile",
+          "class": "HttpDownload",
           "params": {
             "url": "http://www.example.com/"
           }

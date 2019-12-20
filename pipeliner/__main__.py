@@ -1,6 +1,7 @@
 import json
 import logging
 import logging.config
+import os
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from pathlib import Path
 
@@ -8,22 +9,23 @@ logger = logging.getLogger(__name__)
 
 
 def load_config(path: str) -> dict:
-    path = Path(path).resolve()
-    if path.suffix.lower() != ".json":
-        raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
+    try:
+        path = Path(path).resolve()
+        if path.suffix.lower() != ".json":
+            raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
 
-    if not path.is_file():
-        package_path = Path(__file__).resolve().parent
-        path = package_path / path
+        if not path.is_file():
+            cwd = Path(os.getcwd()).resolve()
+            path = cwd / path
+
         if path.is_file():
             with open(str(path), "r") as config_file:
-                try:
-                    config = json.load(config_file)
-                    return config
-                except Exception:
-                    raise ArgumentTypeError(f"Could not parse config {path}")
+                return json.load(config_file)
 
-    raise ArgumentTypeError(f"Given config path {path} is not a file")
+        raise FileNotFoundError(f"{path} is not a valid file")
+
+    except Exception as e:
+        raise ArgumentTypeError(f"Could not parse config {path} because {e}")
 
 
 def main():

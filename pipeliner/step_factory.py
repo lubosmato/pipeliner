@@ -25,7 +25,7 @@ class StepFactory:
 
         return steps[0]
 
-    def _import_custom_steps(self):
+    def _import_custom_steps(self) -> None:
         sys.path.append(str(self._custom_steps_path.parent))
         custom_steps_module = importlib.import_module(str(self._custom_steps_path.name))
         if "__all__" in custom_steps_module.__dict__:

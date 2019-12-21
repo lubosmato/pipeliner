@@ -1,25 +1,21 @@
 import importlib
 import sys
 from pathlib import Path
+from typing import List
 
 from pipeliner.steps import Step
 
 
-class StepFactory:
+class StepsFactory:
     def __init__(self, custom_steps_path: Path):
         self._custom_steps_path = custom_steps_path
 
-    def create(self, steps_config: list) -> Step:
+    def create(self, steps_config: list) -> List[Step]:
         self._import_steps_modules()
-
-        steps = [
+        return [
             self.create_step(step_config)
             for step_config in steps_config
         ]
-        for i, step in enumerate(steps[0:-1]):
-            step.set_next_step(steps[i + 1])
-
-        return steps[0]
 
     def _import_steps_modules(self) -> None:
         self._import_steps_module(self._custom_steps_path)
@@ -42,7 +38,7 @@ class StepFactory:
             for key in custom_steps
         })
 
-    def create_step(self, step_config: dict):
+    def create_step(self, step_config: dict) -> Step:
         if step_config["class"] not in globals():
             raise ModuleNotFoundError(f"could not find step class: {step_config['class']}")
         return globals()[step_config["class"]](**step_config.get("params", dict()))

@@ -1,3 +1,3 @@
 from .pipeline import Pipeline
-from .step_factory import StepFactory
+from .steps_factory import StepsFactory
 from .pipeline_factory import PipelineFactory

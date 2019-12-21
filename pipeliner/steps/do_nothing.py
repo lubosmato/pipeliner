@@ -1,5 +1,8 @@
-from pipeliner.steps.step import BasicStep
+from typing import Any
+
+from pipeliner.steps import Step
 
 
-class DoNothing(BasicStep):
-    pass
+class DoNothing(Step):
+    def perform(self, data: Any) -> Any:
+        return data

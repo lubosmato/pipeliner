@@ -1,17 +1,19 @@
-from pipeliner.steps import BasicStep
+from typing import Any
+
+from pipeliner.steps import Step
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class SayHello(BasicStep):
-    def perform(self, data: str) -> None:
+class SayHello(Step):
+    def perform(self, data: Any) -> Any:
         logger.info(f"Hello there! Got this: {data}")
-        super().perform(data)
+        return data
 
 
-class SayBye(BasicStep):
-    def perform(self, data: str) -> None:
+class SayBye(Step):
+    def perform(self, data: Any) -> Any:
         logger.info(f"Bye bye! Got this: {data}")
-        super().perform(data)
+        return data

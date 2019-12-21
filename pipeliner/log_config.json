@@ -1,33 +1,37 @@
 {
-	"version": 1,
-	"disable_existing_loggers": false,
-	"formatters": {
-		"colored-text": {
-			"class": "colorlog.ColoredFormatter",
-			"format": "%(asctime)s | %(name)s | %(log_color)s%(levelname)s%(reset)s | %(log_color)s%(message)s%(reset)s"
-		},
-		"text": {
-			"format": "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
-		}
-	},
-	"handlers": {
-		"text-file": {
-			"class": "logging.FileHandler",
-			"formatter": "text",
-			"filename": "log.log"
-		},
-		"stdout": {
-			"class": "logging.StreamHandler",
-			"formatter": "colored-text"
-		}
-	},
-	"loggers": {
-		"": {
-			"handlers": [
-				"text-file",
-				"stdout"
-			],
-			"level": "DEBUG"
-		}
-	}
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "colored-text": {
+      "class": "colorlog.ColoredFormatter",
+      "format": "%(asctime)s | %(name)s | %(log_color)s%(levelname)s%(reset)s | %(log_color)s%(message)s%(reset)s"
+    },
+    "text": {
+      "format": "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+    }
+  },
+  "handlers": {
+    "text-file": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "formatter": "text",
+      "maxBytes": 10485760,
+      "backupCount": 3,
+      "filename": "log.log",
+      "level": "WARNING"
+    },
+    "stdout": {
+      "class": "logging.StreamHandler",
+      "formatter": "colored-text",
+      "level": "DEBUG"
+    }
+  },
+  "loggers": {
+    "": {
+      "handlers": [
+        "text-file",
+        "stdout"
+      ],
+      "level": "DEBUG"
+    }
+  }
 }

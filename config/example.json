@@ -19,13 +19,24 @@
           }
         },
         {
-          "class": "CompareWithPrevious"
-        },
-        {
-          "class": "SayHello"
-        },
-        {
-          "class": "SayHello"
+          "class": "CompareWithPrevious",
+          "params": {
+            "when_same": {
+              "class": "DoNothing"
+            },
+            "when_different": {
+              "class": "SendEmail",
+              "params": {
+                "smtp_host": "smtp.doe.com",
+                "smtp_port": 465,
+                "login": "john@doe.com",
+                "password": "$3cr37",
+                "from_email": "john@doe.com",
+                "to_email": "sally@doe.com",
+                "subject": "Something important happened!"
+              }
+            }
+          }
         }
       ]
     }

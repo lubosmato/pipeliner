@@ -2,82 +2,117 @@ import json
 import logging
 import logging.config
 import os
+import signal
+import threading
+import time
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from pathlib import Path
+from typing import List, Any
+
+from pipeliner.pipeline_runner import PipelineRunner
 from . import config
 
-from pipeliner import StepsFactory, PipelineFactory
+from pipeliner import StepsFactory, PipelineFactory, Pipeline
 
 logger = logging.getLogger(__name__)
 
 
-def main():
-    load_logger_config()
+class Pipeliner:
+    runners: List[PipelineRunner]
+    pipelines: List[Pipeline]
 
-    parser = ArgumentParser(
-        description=r"""
+    def __init__(self):
+        self.load_logger_config()
+        self.parser = ArgumentParser(
+            description=r"""
     ____  _            ___                
    / __ \(_)___  ___  / (_)___  ___  _____
   / /_/ / / __ \/ _ \/ / / __ \/ _ \/ ___/
  / ____/ / /_/ /  __/ / / / / /  __/ /    
 /_/   /_/ .___/\___/_/_/_/ /_/\___/_/     
        /_/                                
-Get rid of repetitive tasks. Make yourself more happy.
+Get rid of repetitive tasks. Make yourself happier.
 """,
-        formatter_class=RawTextHelpFormatter,
-        add_help=True
-    )
-    parser.add_argument(
-        "config",
-        type=load_config,
-        metavar="config",
-        help="path to a config JSON file"
-    )
-    args = parser.parse_args()
-    config.config = args.config
+            formatter_class=RawTextHelpFormatter,
+            add_help=True
+        )
+        self.parser.add_argument(
+            "config",
+            type=self.load_config,
+            metavar="config",
+            help="path to a config JSON file"
+        )
+        args = self.parser.parse_args()
+        config.config = args.config
 
-    custom_steps_path = Path(config.config.get("custom_steps", "")).resolve()
-    steps_factory = StepsFactory(custom_steps_path)
-    pipeline_factory = PipelineFactory(steps_factory)
+        custom_steps_path = Path(config.config.get("custom_steps", "")).resolve()
+        self.steps_factory = StepsFactory(custom_steps_path)
+        self.pipeline_factory = PipelineFactory(self.steps_factory)
+        self.pipelines = []
+        self.runners = []
 
-    pipelines = [
-        pipeline_factory.create(pipeline_config)
-        for pipeline_config in config.config.get("pipelines", [])
-    ]
+        # signal.signal(signal.SIGINT, lambda sig, frame: self.stop())
 
-    for pipeline in pipelines:
-        pipeline.run()
+    @staticmethod
+    def load_logger_config():
+        log_config_path = str(Path(__file__).resolve().parent / "log_config.json")
+        with open(log_config_path, "r") as log_config_file:
+            log_config = json.load(log_config_file)
+            logging.config.dictConfig(log_config)
 
-    for pipeline in pipelines:
-        pipeline.run()
+    @staticmethod
+    def load_config(path: str) -> dict:
+        try:
+            path = Path(path).resolve()
+            if path.suffix.lower() != ".json":
+                raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
 
+            if not path.is_file():
+                cwd = Path(os.getcwd()).resolve()
+                path = cwd / path
 
-def load_logger_config():
-    log_config_path = str(Path(__file__).resolve().parent / "log_config.json")
-    with open(log_config_path, "r") as log_config_file:
-        log_config = json.load(log_config_file)
-        logging.config.dictConfig(log_config)
+            if path.is_file():
+                with open(str(path), "r") as config_file:
+                    return json.load(config_file)
 
+            raise FileNotFoundError(f"{path} is not a valid file")
 
-def load_config(path: str) -> dict:
-    try:
-        path = Path(path).resolve()
-        if path.suffix.lower() != ".json":
-            raise ArgumentTypeError(f"Given config path {path} is not a valid JSON file")
+        except Exception as e:
+            raise ArgumentTypeError(f"Could not parse config {path} because {e}")
 
-        if not path.is_file():
-            cwd = Path(os.getcwd()).resolve()
-            path = cwd / path
+    def run(self):
+        self.pipelines = [
+            self.pipeline_factory.create(pipeline_config)
+            for pipeline_config in config.config.get("pipelines", [])
+        ]
+        if not self.pipelines:
+            logger.warning("No pipelines were found. Add a pipeline into configuration to run Pipeliner.")
+        else:
+            logger.info(f"Found {len(self.pipelines)} pipelines. Creating and starting runners...")
 
-        if path.is_file():
-            with open(str(path), "r") as config_file:
-                return json.load(config_file)
+        self.runners = [
+            PipelineRunner(pipeline)
+            for pipeline in self.pipelines
+        ]
+        for runner in self.runners:
+            runner.start()
 
-        raise FileNotFoundError(f"{path} is not a valid file")
+        try:
+            logger.info("Running!")
+            while True:
+                time.sleep(10)
+        except (KeyboardInterrupt, SystemExit):
+            pass
+        logger.info("Stopping runners.")
+        self.stop()
+        logger.info("I hope I helped you. Have a nice day! :)")
 
-    except Exception as e:
-        raise ArgumentTypeError(f"Could not parse config {path} because {e}")
+    def stop(self):
+        for runner in self.runners:
+            runner.stop()
+        self.runners = []
 
 
 if __name__ == '__main__':
-    main()
+    pipeliner = Pipeliner()
+    pipeliner.run()

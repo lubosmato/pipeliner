@@ -25,7 +25,7 @@
               "class": "DoNothing"
             },
             "when_different": {
-              "class": "SendEmail",
+              "class": "SendEmailSsl",
               "params": {
                 "smtp_host": "smtp.gmail.com",
                 "smtp_port": 465,

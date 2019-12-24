@@ -2,20 +2,20 @@
   "custom_steps": "../custom_steps/",
   "pipelines": [
     {
-      "name": "Notify me when new blog post is published",
+      "name": "Notify when new blog post is published",
       "schedule": "* * * * *",
       "steps": [
         {
           "class": "HttpDownload",
           "params": {
-            "url": "http://www.example.com/",
+            "url": "https://johndoesblog.com/news-feed",
             "headers": {}
           }
         },
         {
-          "class": "GetHtmlElementText",
+          "class": "GetHtmlElement",
           "params": {
-            "element_xpath": "(//*[@class=\"post-title\"])[1]/a"
+            "element_xpath": "(//*[@class=\"post-title\"])[1]"
           }
         },
         {
@@ -27,13 +27,13 @@
             "when_different": {
               "class": "SendEmail",
               "params": {
-                "smtp_host": "smtp.doe.com",
+                "smtp_host": "smtp.gmail.com",
                 "smtp_port": 465,
                 "login": "john@doe.com",
                 "password": "$3cr37",
                 "from_email": "john@doe.com",
-                "to_email": "sally@doe.com",
-                "subject": "Something important happened!"
+                "to_email": "alfredo@doe.com",
+                "subject": "Hey bro, new blog post is ready!"
               }
             }
           }

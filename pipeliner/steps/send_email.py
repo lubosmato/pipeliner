@@ -1,7 +1,7 @@
 import logging
 import smtplib
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any
 
 from pipeliner.steps.step import Step
 
@@ -24,10 +24,13 @@ class SendEmail(Step):
             server.ehlo()
             server.login(self._login, self._password)
 
-            message = MIMEText(data)
+            message = MIMEMultipart("alternative")
             message["Subject"] = self._subject
             message["From"] = self._from_email
             message["To"] = self._to_email
+
+            message.attach(MIMEText(data, "plain"))
+            message.attach(MIMEText(data, "html"))
 
             server.sendmail(self._from_email, self._to_email, message.as_string())
 

@@ -36,7 +36,7 @@ By providing this configuration, pipeliner will download `http://www.example.com
               "class": "DoNothing"
             },
             "when_different": {
-              "class": "SendEmail",
+              "class": "SendEmailSsl",
               "params": {
                 "smtp_host": "smtp.doe.com",
                 "smtp_port": 465,

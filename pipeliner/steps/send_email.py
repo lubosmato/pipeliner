@@ -1,6 +1,7 @@
 import logging
 import smtplib
 import ssl
+from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -59,14 +60,14 @@ class SendEmailSsl(Step):
             server.login(self._login, self._password)
 
             message = MIMEMultipart("alternative")
-            message["Subject"] = self._subject
+            message["Subject"] = Header(self._subject, "utf-8")
             message["From"] = self._from_email
             message["To"] = self._to_email
 
-            message.attach(MIMEText(data, "plain"))
-            message.attach(MIMEText(data, "html"))
+            message.attach(MIMEText(data, "plain", "utf-8"))
+            message.attach(MIMEText(data, "html", "utf-8"))
 
-            server.sendmail(self._from_email, self._to_email, message.as_string())
+            server.sendmail(self._from_email, self._to_email, message.as_string().encode("ascii"))
 
         logger.info("Email was sent successfully")
         return data

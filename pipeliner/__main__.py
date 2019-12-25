@@ -2,12 +2,10 @@ import json
 import logging
 import logging.config
 import os
-import signal
-import threading
 import time
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from pathlib import Path
-from typing import List, Any
+from typing import List
 
 from pipeliner.pipeline_runner import PipelineRunner
 from . import config
@@ -51,8 +49,6 @@ Get rid of repetitive tasks. Make yourself happier.
         self.pipelines = []
         self.runners = []
 
-        # signal.signal(signal.SIGINT, lambda sig, frame: self.stop())
-
     @staticmethod
     def load_logger_config():
         log_config_path = str(Path(__file__).resolve().parent / "log_config.json")
@@ -72,7 +68,7 @@ Get rid of repetitive tasks. Make yourself happier.
                 path = cwd / path
 
             if path.is_file():
-                with open(str(path), "r") as config_file:
+                with open(str(path), encoding="utf8", mode="r") as config_file:
                     return json.load(config_file)
 
             raise FileNotFoundError(f"{path} is not a valid file")

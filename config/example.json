@@ -39,6 +39,32 @@
           }
         }
       ]
+    },
+    {
+      "name": "Send a random message to my wife",
+      "schedule": "0 * * * *",
+      "steps": [
+        {
+          "class": "PickRandomText",
+          "params": {
+            "choices": [
+              "I love you my sweetheart",
+              "You are the best! :-*",
+              "Have a great day honey <3",
+              "Hi <3",
+              "What would you like me to cook today? :)"
+            ]
+          }
+        },
+        {
+          "class": "SendMessageFb",
+          "params": {
+            "login": "john@doe.com",
+            "password": "s3cr37$ass",
+            "to_user_name": "Alison Doe"
+          }
+        }
+      ]
     }
   ]
 }

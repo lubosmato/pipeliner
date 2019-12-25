@@ -5,3 +5,5 @@ from .http_download import HttpDownload
 from .compare_with_previous import CompareWithPrevious
 from .send_email import SendEmailSsl, SendEmailTls
 from .do_nothing import DoNothing
+from .send_message import SendMessageFb
+from .make_data import MakeTextData, PickRandomText

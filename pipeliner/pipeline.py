@@ -1,6 +1,7 @@
 import copy
 import logging
 import re
+from abc import ABC, abstractmethod
 from typing import List, Any, Tuple
 from datetime import datetime
 
@@ -10,42 +11,66 @@ logger = logging.getLogger(__name__)
 
 
 class Schedule:
-    class Value:
-        def __init__(self, is_every_nth: bool, value: int):
-            self._is_every_nth = is_every_nth
+    class Value(ABC):
+        @abstractmethod
+        def match(self, value: int) -> bool:
+            pass
+
+    class NumberValue(Value):
+        def __init__(self, value: int):
             self._value = value
 
         def match(self, value: int) -> bool:
-            if self._is_every_nth:
-                return value % self._value == 0
             return value == self._value
+
+    class EveryNthValue(Value):
+        def __init__(self, value: int):
+            self._value = value
+
+        def match(self, value: int) -> bool:
+            return value % self._value == 0
+
+    class RangeValue(Value):
+        def __init__(self, range_from: int, range_to: int):
+            self._from = range_from
+            self._to = range_to
+
+        def match(self, value: int) -> bool:
+            return self._from <= value <= self._to
 
     def __init__(self, time_string: str):
         parts = re.split(r"\s+", time_string)
         are_parts_ok = all(
-            re.match(r"^(\d+|\*|\*/\d+)$", part)
+            re.match(r"^(\d+|\*|\*/\d+|\d+-\d+)$", part)
             for part in parts
         )
         if not are_parts_ok or len(parts) != 5:
             raise ValueError("Invalid time string format")
 
-        self._minute = self._parse_value(parts[0], (0, 59))
-        self._hour = self._parse_value(parts[1], (0, 23))
-        self._day_of_month = self._parse_value(parts[2], (1, 31))
-        self._month = self._parse_value(parts[3], (1, 12))
-        self._day_of_week = self._parse_value(parts[4], (0, 7))
+        self._minute = self._make_value(parts[0], (0, 59))
+        self._hour = self._make_value(parts[1], (0, 23))
+        self._day_of_month = self._make_value(parts[2], (1, 31))
+        self._month = self._make_value(parts[3], (1, 12))
+        self._day_of_week = self._make_value(parts[4], (0, 7))
 
-    def _parse_value(self, value: str, allowed_range: Tuple[int, int]) -> Value:
+    def _make_value(self, value: str, allowed_range: Tuple[int, int]) -> Value:
         if value == "*":
-            return Schedule.Value(True, 1)
-        elif re.match(r"\d+", value):
+            return Schedule.EveryNthValue(1)
+        elif re.match(r"^\d+$", value):
             parsed = int(value)
             self._check_range(parsed, allowed_range)
-            return Schedule.Value(False, parsed)
-        elif re.match(r"\*/\d+", value):
+            return Schedule.NumberValue(parsed)
+        elif re.match(r"^\*/\d+$", value):
             parsed = int(value.split("/")[1])
             self._check_range(parsed, allowed_range)
-            return Schedule.Value(True, parsed)
+            return Schedule.EveryNthValue(parsed)
+        elif re.match(r"^\d+-\d+$", value):
+            range_parts = value.split("-")
+            range_from = int(range_parts[0])
+            range_to = int(range_parts[1])
+            self._check_range(range_from, allowed_range)
+            self._check_range(range_to, allowed_range)
+            return Schedule.RangeValue(range_from, range_to)
 
         logger.error(f"Invalid schedule value")
         raise ValueError("Invalid schedule value")

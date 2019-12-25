@@ -41,8 +41,8 @@
       ]
     },
     {
-      "name": "Send a random message to my wife",
-      "schedule": "0 * * * *",
+      "name": "Send a random message to my wife when I am in office",
+      "schedule": "*/15 9-14 * * 1-5",
       "steps": [
         {
           "class": "PickRandomText",

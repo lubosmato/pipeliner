@@ -147,14 +147,14 @@ class Pipeline:
             try:
                 copied_data = copy.deepcopy(self._current_data)
                 self._current_data = step.perform(copied_data)
-                logger.info(f"Pipeline \"{self.name}\" has been finished")
+                logger.info(f"Step {step} in \"{self.name}\" has been finished")
                 return
             except Exception as e:
-                logger.warning(f"Pipeline \"{self.name}\": {step} has failed: {e}. Retrying.")
+                logger.warning(f"Step {step} in \"{self.name}\" has failed: {e}. Retrying.")
                 last_exception = e
 
         if last_exception:
-            logger.error(f"Pipeline \"{self.name}\": {step} has failed too many times.")
+            logger.error(f"Step {step} in \"{self.name}\" has failed too many times.")
             raise last_exception
 
     @property

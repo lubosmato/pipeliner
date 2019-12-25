@@ -59,8 +59,8 @@ Example configuration:
 
 By providing this configuration, pipeliner will download `http://www.example.com/`. Downloaded content is then passed into the next step which finds `html` element by `(//*[@class=\"post-title\"])[1]/a` XPath and passes content of the element into next step where the element content is compared with previous version from previous run. Lastly, email is sent to john@doe.com if the element content is different.
 
-# Make your wife happy (or angry)
-Example configuration to make your wife happy. Or angry if she knows you.
+# Make your wife/husband happy (or angry)
+Example configuration to make your wife/husband happy. Or angry if she/he knows you.
 ```json
 {
   "custom_steps": "../custom_steps/",

@@ -4,7 +4,7 @@ Pipeliner can do several anoying repetitive tasks for you. For example imagine y
 Pipeliner runs multiple pipelines. Each pipeline is a list of steps that are executed in a row. Pipelines are defined in configuration file.
 
 ## Step
-Each step gets input data which is modified and then passed to the next step. Step instance is created by using a given class name in `class` field. Constructor parameters are specified in `params` field. If a step fails, pipeliner will repeat the step up to 3 times. If step fails after 3 retries, pipeliner will try run whole pipeline again. 
+Each step gets input data which is modified and then passed to the next step. Step instance is created by using a given class name in `class` field. Constructor parameters are specified in `params` field. If a step fails, pipeliner will repeat the step up to 3 times. If step fails after 3 retries, pipeliner will try to run whole pipeline again. 
 
 # Configuration
 Pipeliner uses `json` configuration which defines pipelines to be run. Each pipeline consists of multiple steps which are performed one by one. Pipelines can be scheduled by providing crontab-like format schedule in `schedule` field. 

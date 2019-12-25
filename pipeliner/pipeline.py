@@ -86,11 +86,7 @@ class Schedule:
 
     def __init__(self, time_string: str):
         parts = re.split(r"\s+", time_string)
-        are_parts_ok = all(
-            re.match(r"^(\d+|\*|\*/\d+|\d+-\d+)$", part)
-            for part in parts
-        )
-        if not are_parts_ok or len(parts) != 5:
+        if len(parts) != 5:
             raise ValueError("Invalid time string format")
 
         self._minute = self._make_value(parts[0], (0, 59))
@@ -104,7 +100,7 @@ class Schedule:
             made_value = ValueType()
             if made_value.parse(value, allowed_range):
                 return made_value
-            
+
         logger.error(f"Invalid schedule value")
         raise ValueError("Invalid schedule value")
 

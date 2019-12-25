@@ -108,3 +108,6 @@ Pipeliner can use custom steps. Just add path to a package with custom steps and
   "pipelines": [...]
 }
 ```
+
+# Contribution
+Feel free to add your step implementations and share with me your use-cases 😜

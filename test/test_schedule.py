@@ -5,17 +5,27 @@ from pipeliner.pipeline import Schedule
 
 
 def test_schedule_value():
-    value = Schedule.NumberValue(10)
+    value = Schedule.NumberValue()
+    assert value.parse("10", (0, 100))
+
     assert not value.match(20)
     assert not value.match(11)
     assert value.match(10)
 
-    value = Schedule.EveryNthValue(10)
+    value = Schedule.EveryNthValue()
+    assert value.parse("*/10", (0, 100))
     assert value.match(20)
     assert not value.match(11)
     assert value.match(10)
 
-    value = Schedule.RangeValue(10, 20)
+    value = Schedule.EveryTimeValue()
+    assert value.parse("*", (0, 100))
+    assert value.match(1)
+    assert value.match(2)
+    assert value.match(3)
+
+    value = Schedule.RangeValue()
+    assert value.parse("10-20", (0, 100))
     assert not value.match(9)
     assert value.match(10)
     assert value.match(20)

@@ -13,30 +13,76 @@ logger = logging.getLogger(__name__)
 class Schedule:
     class Value(ABC):
         @abstractmethod
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            pass
+
+        @abstractmethod
         def match(self, value: int) -> bool:
             pass
 
+        @staticmethod
+        def _check_range(value: int, allowed_range: Tuple[int, int]):
+            if not (allowed_range[0] <= value <= allowed_range[1]):
+                raise ValueError("value is not in allowed range")
+
     class NumberValue(Value):
-        def __init__(self, value: int):
-            self._value = value
+        def __init__(self):
+            self._value = None
+
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            if re.match(r"^\d+$", token):
+                parsed = int(token)
+                self._check_range(parsed, allowed_range)
+                self._value = parsed
+                return True
+            return False
 
         def match(self, value: int) -> bool:
             return value == self._value
 
     class EveryNthValue(Value):
-        def __init__(self, value: int):
-            self._value = value
+        def __init__(self):
+            self._value = None
+
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            if re.match(r"^\*/\d+$", token):
+                parsed = int(token.split("/")[1])
+                self._check_range(parsed, allowed_range)
+                self._value = parsed
+                return True
+            return False
 
         def match(self, value: int) -> bool:
             return value % self._value == 0
 
+    class EveryTimeValue(EveryNthValue):
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            if token == "*":
+                self._value = 1
+                return True
+            return False
+
     class RangeValue(Value):
-        def __init__(self, range_from: int, range_to: int):
-            self._from = range_from
-            self._to = range_to
+        def __init__(self):
+            self._from = None
+            self._to = None
+
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            if re.match(r"^\d+-\d+$", token):
+                range_parts = token.split("-")
+                range_from = int(range_parts[0])
+                range_to = int(range_parts[1])
+                self._check_range(range_from, allowed_range)
+                self._check_range(range_to, allowed_range)
+                self._from = range_from
+                self._to = range_to
+                return True
+            return False
 
         def match(self, value: int) -> bool:
             return self._from <= value <= self._to
+
+    _AVAILABLE_VALUE_TYPES = [NumberValue, EveryNthValue, EveryTimeValue, RangeValue]
 
     def __init__(self, time_string: str):
         parts = re.split(r"\s+", time_string)
@@ -54,31 +100,13 @@ class Schedule:
         self._day_of_week = self._make_value(parts[4], (0, 7))
 
     def _make_value(self, value: str, allowed_range: Tuple[int, int]) -> Value:
-        if value == "*":
-            return Schedule.EveryNthValue(1)
-        elif re.match(r"^\d+$", value):
-            parsed = int(value)
-            self._check_range(parsed, allowed_range)
-            return Schedule.NumberValue(parsed)
-        elif re.match(r"^\*/\d+$", value):
-            parsed = int(value.split("/")[1])
-            self._check_range(parsed, allowed_range)
-            return Schedule.EveryNthValue(parsed)
-        elif re.match(r"^\d+-\d+$", value):
-            range_parts = value.split("-")
-            range_from = int(range_parts[0])
-            range_to = int(range_parts[1])
-            self._check_range(range_from, allowed_range)
-            self._check_range(range_to, allowed_range)
-            return Schedule.RangeValue(range_from, range_to)
-
+        for ValueType in self._AVAILABLE_VALUE_TYPES:
+            made_value = ValueType()
+            if made_value.parse(value, allowed_range):
+                return made_value
+            
         logger.error(f"Invalid schedule value")
         raise ValueError("Invalid schedule value")
-
-    @staticmethod
-    def _check_range(value: int, allowed_range: Tuple[int, int]):
-        if not (allowed_range[0] <= value <= allowed_range[1]):
-            raise ValueError("value is not in allowed range")
 
     def should_run(self, when: datetime = datetime.now()):
         if not self._minute.match(when.minute):

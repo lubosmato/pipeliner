@@ -31,6 +31,14 @@ def test_schedule_value():
     assert value.match(20)
     assert not value.match(21)
 
+    value = Schedule.MultipleValue()
+    assert value.parse("1,2,3", (0, 100))
+    assert not value.match(0)
+    assert value.match(1)
+    assert value.match(2)
+    assert value.match(3)
+    assert not value.match(4)
+
 
 def test_schedule_time_format():
     with pytest.raises(ValueError):
@@ -74,3 +82,12 @@ def test_schedule_from_to():
     assert schedule.should_run(datetime(2019, 1, 1, 9, 0, 0))
     assert schedule.should_run(datetime(2019, 1, 1, 14, 0, 0))
     assert not schedule.should_run(datetime(2019, 1, 1, 15, 0, 0))
+
+
+def test_schedule_multiple():
+    schedule = Schedule("* 1,2,3 * * *")
+    assert not schedule.should_run(datetime(2019, 1, 1, 0, 0, 0))
+    assert schedule.should_run(datetime(2019, 1, 1, 1, 0, 0))
+    assert schedule.should_run(datetime(2019, 1, 1, 2, 0, 0))
+    assert schedule.should_run(datetime(2019, 1, 1, 3, 0, 0))
+    assert not schedule.should_run(datetime(2019, 1, 1, 4, 0, 0))

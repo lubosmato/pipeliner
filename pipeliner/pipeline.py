@@ -82,7 +82,24 @@ class Schedule:
         def match(self, value: int) -> bool:
             return self._from <= value <= self._to
 
-    _AVAILABLE_VALUE_TYPES = [NumberValue, EveryNthValue, EveryTimeValue, RangeValue]
+    class MultipleValue(Value):
+        def __init__(self):
+            self._values = []
+
+        def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
+            if re.match(r"^(\d+,)*\d+$", token):
+                value_parts = token.split(",")
+                values = [int(value) for value in value_parts]
+                for value in values:
+                    self._check_range(value, allowed_range)
+                self._values = values
+                return True
+            return False
+
+        def match(self, value: int) -> bool:
+            return value in self._values
+
+    _AVAILABLE_VALUE_TYPES = [NumberValue, EveryNthValue, EveryTimeValue, RangeValue, MultipleValue]
 
     def __init__(self, time_string: str):
         parts = re.split(r"\s+", time_string)

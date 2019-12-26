@@ -45,7 +45,7 @@ Example configuration:
                 "login": "john@doe.com",
                 "password": "$3cr37",
                 "from_email": "john@doe.com",
-                "to_email": "sally@doe.com",
+                "to_emails": ["sally@doe.com"],
                 "subject": "Something important happened!"
               }
             }

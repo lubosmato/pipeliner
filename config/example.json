@@ -32,7 +32,7 @@
                 "login": "john@doe.com",
                 "password": "$3cr37",
                 "from_email": "john@doe.com",
-                "to_email": "alfredo@doe.com",
+                "to_emails": ["alfredo@doe.com"],
                 "subject": "Hey bro, new blog post is ready!"
               }
             }

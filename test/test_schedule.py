@@ -1,43 +1,40 @@
+from typing import Set
+
 import pytest
 from datetime import datetime
 
 from pipeliner.pipeline import Schedule
+from pipeliner.schedule import NumberValue, EveryNthValue, EveryTimeValue, RangeValue, MultipleValue, Value
+
+
+def match_values(value: Value, should_match: Set[int]):
+    for i in range(100):
+        if i in should_match:
+            assert value.match(i)
+        else:
+            assert not value.match(i)
 
 
 def test_schedule_value():
-    value = Schedule.NumberValue()
+    value = NumberValue()
     assert value.parse("10", (0, 100))
+    match_values(value, {10})
 
-    assert not value.match(20)
-    assert not value.match(11)
-    assert value.match(10)
-
-    value = Schedule.EveryNthValue()
+    value = EveryNthValue()
     assert value.parse("*/10", (0, 100))
-    assert value.match(20)
-    assert not value.match(11)
-    assert value.match(10)
+    match_values(value, {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100})
 
-    value = Schedule.EveryTimeValue()
+    value = EveryTimeValue()
     assert value.parse("*", (0, 100))
-    assert value.match(1)
-    assert value.match(2)
-    assert value.match(3)
+    match_values(value, set(range(101)))
 
-    value = Schedule.RangeValue()
+    value = RangeValue()
     assert value.parse("10-20", (0, 100))
-    assert not value.match(9)
-    assert value.match(10)
-    assert value.match(20)
-    assert not value.match(21)
+    match_values(value, {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20})
 
-    value = Schedule.MultipleValue()
-    assert value.parse("1,2,3", (0, 100))
-    assert not value.match(0)
-    assert value.match(1)
-    assert value.match(2)
-    assert value.match(3)
-    assert not value.match(4)
+    value = MultipleValue()
+    assert value.parse("1,2,3,5-7,*/20,10", (0, 100))
+    match_values(value, {0, 1, 2, 3, 5, 6, 7, 10, 20, 40, 60, 80, 100})
 
 
 def test_schedule_time_format():

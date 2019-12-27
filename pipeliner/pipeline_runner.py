@@ -37,10 +37,9 @@ class PipelineRunner(Thread):
                 try:
                     self._pipeline.run()
                     should_retry = False
-                    logger.info(f"Pipeline {self._pipeline.name} has finished")
                 except Exception:
                     should_retry = True
-                    logger.info(f"Pipeline {self._pipeline.name} has failed. Scheduling to next minute.")
+                    logger.info(f"Pipeline \"{self._pipeline.name}\" has failed. Scheduling to next minute.")
 
             before_minute = now.minute
             time.sleep(1)

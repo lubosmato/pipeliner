@@ -24,27 +24,27 @@ class Pipeline:
             self._current_data = None
             for step in self._steps:
                 self._perform_step(step)
-            logger.info(f"Pipeline \"{self.name}\" has finished")
+            logger.info(f"Pipeline \"{self.name}\" has finished.")
         except Exception as e:
             logger.error(f"Pipeline \"{self.name}\" has failed because {e}")
             raise e
 
     def _perform_step(self, step: Step):
-        logger.info(f"Pipeline \"{self.name}\", step {step}")
+        logger.info(f"Starting step {step} from \"{self.name}\".")
 
         last_exception = None
         for _ in range(self.STEP_REPEAT_TRY_COUNT):
             try:
                 copied_data = copy.deepcopy(self._current_data)
                 self._current_data = step.perform(copied_data)
-                logger.info(f"Step {step} in \"{self.name}\" has been finished")
+                logger.info(f"Finished step {step} from \"{self.name}\".")
                 return
             except Exception as e:
-                logger.warning(f"Step {step} in \"{self.name}\" has failed: {e}. Retrying.")
+                logger.warning(f"Failed step {step} from \"{self.name}\". Retrying...")
                 last_exception = e
 
         if last_exception:
-            logger.error(f"Step {step} in \"{self.name}\" has failed too many times.")
+            logger.error(f"Step {step} from \"{self.name}\" failed too many times.")
             raise last_exception
 
     @property

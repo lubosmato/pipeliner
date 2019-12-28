@@ -18,7 +18,7 @@ class Value(ABC):
         pass
 
     @staticmethod
-    def _check_range(value: int, allowed_range: Tuple[int, int]):
+    def _check_range(value: int, allowed_range: Tuple[int, int]) -> None:
         if not (allowed_range[0] <= value <= allowed_range[1]):
             raise ValueError("value is not in allowed range")
 
@@ -136,7 +136,7 @@ class Schedule:
         self._month = Value.make(parts[3], (1, 12), self._AVAILABLE_VALUE_TYPES)
         self._day_of_week = Value.make(parts[4], (0, 7), self._AVAILABLE_VALUE_TYPES)
 
-    def should_run(self, when: datetime = datetime.now()):
+    def should_run(self, when: datetime = datetime.now()) -> bool:
         if not self._minute.match(when.minute):
             return False
         if not self._hour.match(when.hour):

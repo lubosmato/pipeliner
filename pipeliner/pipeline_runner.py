@@ -20,7 +20,7 @@ class PipelineRunner(Thread):
         self._running = True
         super().start()
 
-    def stop(self):
+    def stop(self) -> None:
         self._running = False
         self.join()
 

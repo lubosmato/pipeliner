@@ -1,8 +1,8 @@
-from pipeliner import Pipeline, StepsFactory
+from pipeliner import Pipeline, StepsFactoryWithCustomSteps
 
 
 class PipelineFactory:
-    def __init__(self, steps_factory: StepsFactory):
+    def __init__(self, steps_factory: StepsFactoryWithCustomSteps):
         self._steps_factory = steps_factory
 
     def create(self, pipeline_config: dict) -> Pipeline:

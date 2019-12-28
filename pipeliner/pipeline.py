@@ -29,7 +29,7 @@ class Pipeline:
             logger.error(f"Pipeline \"{self.name}\" has failed because {e}")
             raise e
 
-    def _perform_step(self, step: Step):
+    def _perform_step(self, step: Step) -> None:
         logger.info(f"Starting step {step} from \"{self.name}\".")
 
         last_exception = None

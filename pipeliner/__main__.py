@@ -8,9 +8,8 @@ from pathlib import Path
 from typing import List
 
 from pipeliner.pipeline_runner import PipelineRunner
-from . import config
 
-from pipeliner import StepsFactory, PipelineFactory, Pipeline
+from pipeliner import StepsFactoryWithCustomSteps, PipelineFactory, Pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +40,10 @@ Get rid of repetitive tasks. Make yourself happier.
             help="path to a config JSON file"
         )
         args = self.parser.parse_args()
-        config.config = args.config
+        self.config = args.config
 
-        custom_steps_path = Path(config.config.get("custom_steps", "")).resolve()
-        self.steps_factory = StepsFactory(custom_steps_path)
+        custom_steps_path = Path(self.config.get("custom_steps", "")).resolve()
+        self.steps_factory = StepsFactoryWithCustomSteps(custom_steps_path)
         self.pipeline_factory = PipelineFactory(self.steps_factory)
         self.pipelines = []
         self.runners = []
@@ -79,7 +78,7 @@ Get rid of repetitive tasks. Make yourself happier.
     def run(self):
         self.pipelines = [
             self.pipeline_factory.create(pipeline_config)
-            for pipeline_config in config.config.get("pipelines", [])
+            for pipeline_config in self.config.get("pipelines", [])
         ]
         if not self.pipelines:
             logger.warning("No pipelines were found. Add a pipeline into configuration to run Pipeliner.")

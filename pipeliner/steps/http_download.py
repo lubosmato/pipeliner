@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import requests
 
@@ -13,6 +14,6 @@ class HttpDownload(Step):
         self._url = url
         self._headers = headers
 
-    def perform(self, data: str) -> str:
+    def perform(self, data: Any) -> str:
         logger.info(f"Downloading {self._url} with headers {self._headers}")
         return requests.get(self._url, headers=self._headers).content

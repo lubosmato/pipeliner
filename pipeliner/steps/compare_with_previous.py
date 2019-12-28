@@ -1,27 +1,23 @@
 import logging
-from pathlib import Path
 from typing import Any
 
-from pipeliner import config
-from pipeliner.steps_factory import StepsFactory
+from pipeliner.steps_factory import HasStepsFactoryMixin, StepsFactory
 from pipeliner.steps.step import Step
 
 logger = logging.getLogger(__name__)
 
 
-class CompareWithPrevious(Step):
+class CompareWithPrevious(Step, HasStepsFactoryMixin):
     _old_next_step: None or Step
 
-    def __init__(self, when_same: dict, when_different: dict):
+    def __init__(self, factory: StepsFactory, when_same: dict, when_different: dict):
+        super().__init__(factory)
         self._previous_data = None
-
-        custom_steps_path = Path(config.config.get("custom_steps", "")).resolve()
-        self._steps_factory = StepsFactory(custom_steps_path)
 
         self._when_same = self._steps_factory.create_step(when_same)
         self._when_different = self._steps_factory.create_step(when_different)
 
-    def perform(self, data: Any) -> None:
+    def perform(self, data: Any) -> Any:
         if self._previous_data is None:
             self._previous_data = data
             return data

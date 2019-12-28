@@ -1,7 +1,7 @@
 from typing import Set
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pipeliner.pipeline import Schedule
 from pipeliner.schedule import NumberValue, EveryNthValue, EveryTimeValue, RangeValue, MultipleValue, Value
@@ -88,3 +88,32 @@ def test_schedule_multiple():
     assert schedule.should_run(datetime(2019, 1, 1, 2, 0, 0))
     assert schedule.should_run(datetime(2019, 1, 1, 3, 0, 0))
     assert not schedule.should_run(datetime(2019, 1, 1, 4, 0, 0))
+
+
+def test_schedule_day_of_week():
+    schedule = Schedule("* * * * 1-5")
+    monday = datetime(2019, 12, 23, 0, 0, 0)
+    assert schedule.should_run(monday)
+    assert schedule.should_run(monday + timedelta(days=1))
+    assert schedule.should_run(monday + timedelta(days=2))
+    assert schedule.should_run(monday + timedelta(days=3))
+    assert schedule.should_run(monday + timedelta(days=4))
+    assert not schedule.should_run(monday + timedelta(days=5))
+    assert not schedule.should_run(monday + timedelta(days=6))
+
+
+def test_schedule_day_of_month():
+    schedule = Schedule("* * 1-15 * *")
+    first_day = datetime(2019, 12, 1, 0, 0, 0)
+    for i in range(15):
+        assert schedule.should_run(first_day + timedelta(days=i))
+    for i in range(15, 31):
+        assert not schedule.should_run(first_day + timedelta(days=i))
+
+
+def test_schedule_month():
+    schedule = Schedule("* * * 1-6 *")
+    for i in range(1, 6):
+        assert schedule.should_run(datetime(2019, i, 1, 0, 0, 0))
+    for i in range(7, 12):
+        assert not schedule.should_run(datetime(2019, i, 1, 0, 0, 0))

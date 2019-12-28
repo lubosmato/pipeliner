@@ -145,6 +145,6 @@ class Schedule:
             return False
         if not self._month.match(when.month):
             return False
-        if not self._day_of_week.match(when.weekday()):
+        if not self._day_of_week.match(when.weekday() + 1):
             return False
         return True

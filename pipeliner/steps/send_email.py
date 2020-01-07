@@ -32,8 +32,8 @@ class SendEmailTls(Step):
             message = MIMEText(data, "html", "utf-8")
             message["Subject"] = Header(self._subject, "utf-8")
             message["From"] = self._from_email
+            message["To"] = ",".join(self._to_emails)
 
-            print(message.as_string().encode("ascii"))
             server.sendmail(self._from_email, self._to_emails, message.as_string().encode("ascii"))
 
         logger.info("Email was sent successfully")
@@ -59,6 +59,7 @@ class SendEmailSsl(Step):
             message = MIMEText(data, "html", "utf-8")
             message["Subject"] = Header(self._subject, "utf-8")
             message["From"] = self._from_email
+            message["To"] = ",".join(self._to_emails)
 
             server.sendmail(self._from_email, self._to_emails, message.as_string().encode("ascii"))
 

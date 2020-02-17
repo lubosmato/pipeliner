@@ -5,7 +5,7 @@ import pytest
 
 from pipeliner import Pipeline, PipelineFactory, StepsFactoryWithCustomSteps
 from pipeliner.schedule import Schedule
-from pipeliner.steps import DoNothing, MakeTextData, Step
+from pipeliner.steps import DoNothing, ProduceText, Step
 
 
 def test_pipeline_factory():
@@ -16,9 +16,9 @@ def test_pipeline_factory():
         "schedule": "* * * * *",
         "steps": [
             {
-                "class": "MakeTextData",
+                "class": "ProduceText",
                 "params": {
-                    "data": "Hello test!"
+                    "text": "Hello test!"
                 }
             },
             {
@@ -33,11 +33,11 @@ def test_pipeline_factory():
 
     assert pipeline.name == "Say hello"
     assert len(pipeline._steps) == 3
-    assert pipeline._steps[0]._data == "Hello test!"
+    assert pipeline._steps[0]._text == "Hello test!"
 
 
 def test_pipeline(mocker):
-    steps = [MakeTextData("Hello test!"), DoNothing(), DoNothing()]
+    steps = [ProduceText("Hello test!"), DoNothing(), DoNothing()]
     mock_steps = [
         mocker.spy(step, "perform")
         for step in steps
@@ -58,7 +58,7 @@ def test_pipeline_step_fails(mocker):
         def perform(self, data: Any) -> Any:
             raise RuntimeError("This step just fails")
 
-    steps = [MakeTextData("Hello test!"), FailingStep(), DoNothing()]
+    steps = [ProduceText("Hello test!"), FailingStep(), DoNothing()]
     mock_steps = [
         mocker.spy(step, "perform")
         for step in steps

@@ -2,13 +2,13 @@ from typing import List
 from unittest.mock import Mock
 
 from pipeliner.steps_factory import StepsFactory
-from pipeliner.steps import CompareWithPrevious, Step, DoNothing, MakeTextData, GetHtmlElement, GetHtmlElementText, HttpDownload, PickRandomText
+from pipeliner.steps import CompareWithPrevious, Step, DoNothing, ProduceText, GetHtmlElement, GetHtmlElementText, HttpDownload, PickRandomText
 
 
 class CompareWithPreviousStepsFactory(StepsFactory):
     def __init__(self):
         self.when_same = DoNothing()
-        self.when_different = MakeTextData("Hello test!")
+        self.when_different = ProduceText("Hello test!")
 
     def create(self, steps_config: list) -> List[Step]:
         return []
@@ -66,7 +66,7 @@ def test_http_download(mocker):
 
 
 def test_make_text_data():
-    step = MakeTextData("Hello test!")
+    step = ProduceText("Hello test!")
     assert step.perform(None) == "Hello test!"
 
 

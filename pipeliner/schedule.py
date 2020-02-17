@@ -42,8 +42,9 @@ class NumberValue(Value):
         self._value = None
 
     def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
-        if re.match(r"^\d+$", token):
-            parsed = int(token)
+        matches = re.search(r"^(\d+)$", token)
+        if matches:
+            parsed = int(matches.groups()[0])
             self._check_range(parsed, allowed_range)
             self._value = parsed
             return True
@@ -58,8 +59,9 @@ class EveryNthValue(Value):
         self._value = None
 
     def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
-        if re.match(r"^\*/\d+$", token):
-            parsed = int(token.split("/")[1])
+        matches = re.search(r"^\*/(\d+)$", token)
+        if matches:
+            parsed = int(matches.groups()[0])
             self._check_range(parsed, allowed_range)
             self._value = parsed
             return True
@@ -83,10 +85,10 @@ class RangeValue(Value):
         self._to = None
 
     def parse(self, token: str, allowed_range: Tuple[int, int]) -> bool:
-        if re.match(r"^\d+-\d+$", token):
-            range_parts = token.split("-")
-            range_from = int(range_parts[0])
-            range_to = int(range_parts[1])
+        matches = re.search(r"^(\d+)-(\d+)$", token)
+        if matches:
+            range_from = int(matches.groups()[0])
+            range_to = int(matches.groups()[1])
             self._check_range(range_from, allowed_range)
             self._check_range(range_to, allowed_range)
             self._from = range_from

@@ -11,7 +11,14 @@ logger = logging.getLogger(__name__)
 
 
 class SendEmailTls(Step):
-    def __init__(self, smtp_host: str, smtp_port: int, login: str, password: str, from_email: str, to_emails: List[str], subject: str):
+    def __init__(self,
+                 smtp_host: str,
+                 smtp_port: int,
+                 login: str,
+                 password: str,
+                 from_email: str,
+                 to_emails: List[str],
+                 subject: str):
         super().__init__()
         self._smtp_host = smtp_host
         self._smtp_port = smtp_port
@@ -41,7 +48,14 @@ class SendEmailTls(Step):
 
 
 class SendEmailSsl(Step):
-    def __init__(self, smtp_host: str, smtp_port: int, login: str, password: str, from_email: str, to_emails: List[str], subject: str):
+    def __init__(self,
+                 smtp_host: str,
+                 smtp_port: int,
+                 login: str,
+                 password: str,
+                 from_email: str,
+                 to_emails: List[str],
+                 subject: str):
         super().__init__()
         self._smtp_host = smtp_host
         self._smtp_port = smtp_port

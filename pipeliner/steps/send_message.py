@@ -13,14 +13,18 @@ class SendMessageFb(Step):
         self._to_user_name = to_user_name
         self._client = None
 
-    def perform(self, data: str) -> str:
+    @property
+    def client(self):
         if self._client is None:
             self._client = Client(
                 self._login,
                 self._password,
                 user_agent="Mozilla/5.0 Pipeliner/0.1"
             )
-        user = self._client.searchForUsers(self._to_user_name, limit=1)[0]  # ugly camelCase for method... pff
-        logger.info(f"Sending message to facebook messenger as {self._client}")
-        self._client.send(Message(text=data), thread_id=user.uid)
+        return self._client
+
+    def perform(self, data: str) -> str:
+        user = self.client.searchForUsers(self._to_user_name, limit=1)[0]  # ugly camelCase for method... pff
+        logger.info(f"Sending message to facebook messenger as {self.client}")
+        self.client.send(Message(text=data), thread_id=user.uid)
         return data

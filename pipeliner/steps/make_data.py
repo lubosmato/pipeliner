@@ -7,13 +7,13 @@ from pipeliner.steps import Step
 logger = logging.getLogger(__name__)
 
 
-class MakeTextData(Step):
-    def __init__(self, data: str):
-        self._data = data
+class ProduceText(Step):
+    def __init__(self, text: str):
+        self._text = text
 
     def perform(self, data: Any) -> str:
-        logger.info(f"Making text data: {self._data}")
-        return self._data
+        logger.info(f"Producing text: {self._text}")
+        return self._text
 
 
 class PickRandomText(Step):
